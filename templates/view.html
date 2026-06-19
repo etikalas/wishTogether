@@ -20,11 +20,67 @@
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     break-inside: avoid;
     page-break-inside: avoid;
+    display: inline-block;
+    width: 100%;
   }
   .wish-tile:hover {
-    transform: translateY(-5px) rotate(0.8deg);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.12) !important;
   }
+  /* Masonry columns layout */
+  .masonry-grid {
+    column-gap: 1.25rem;
+  }
+  .masonry-grid.cols-2 { columns: 2; }
+  .masonry-grid.cols-3 { columns: 3; }
+  .masonry-grid.cols-4 { columns: 4; }
+  @media (max-width: 640px) {
+    .masonry-grid.cols-2,
+    .masonry-grid.cols-3,
+    .masonry-grid.cols-4 { columns: 1; }
+  }
+  @media (min-width: 641px) and (max-width: 900px) {
+    .masonry-grid.cols-3,
+    .masonry-grid.cols-4 { columns: 2; }
+  }
+  /* Scrapbook tilt effect — alternating slight rotations */
+  .wish-tile:nth-child(3n+1) { transform: rotate(-0.6deg); }
+  .wish-tile:nth-child(3n+2) { transform: rotate(0.5deg); }
+  .wish-tile:nth-child(3n+3) { transform: rotate(-0.3deg); }
+  .wish-tile:nth-child(3n+1):hover,
+  .wish-tile:nth-child(3n+2):hover,
+  .wish-tile:nth-child(3n+3):hover {
+    transform: translateY(-4px) rotate(0deg) scale(1.02);
+  }
+  /* Compact mode for 20+ wishes */
+  .compact .wish-tile-inner { padding: 0.9rem 1rem !important; }
+  .compact .wish-emoji    { font-size: 1.4rem !important; }
+  .compact .wish-name     { font-size: 0.85rem !important; }
+  .compact .wish-date     { display: none; }
+  .compact .wish-message  { font-size: 0.8rem !important; line-height: 1.45 !important; }
+  /* Page counter chip */
+  .wish-counter {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-size: 0.8rem;
+    color: #6b7280;
+    font-weight: 500;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  /* Fade-in stagger for tiles */
+  @keyframes tileIn {
+    from { opacity: 0; transform: translateY(12px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .wish-tile { animation: tileIn 0.35s ease both; }
+  {% for i in range(1, 51) %}
+  .wish-tile:nth-child({{ i }}) { animation-delay: {{ [i * 0.04, 1.2] | min }}s; }
+  {% endfor %}
   .star-field {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -95,29 +151,57 @@
 
   <!-- Wishes Grid -->
   {% if card.wishes %}
-  <div style="background: linear-gradient(to bottom, #ffffff, #f5f3ff); padding: 4rem 0;">
-    <div style="max-width: 1100px; margin: 0 auto; padding: 0 1.5rem;">
-      <h2 style="font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: #1f2937; text-align: center; margin-bottom: 0.5rem;">
-        Every Wish, Just for You
-      </h2>
-      <p style="text-align: center; color: #6b7280; margin-bottom: 3rem;">From everyone who loves you</p>
+  {% set wish_count = card.wishes | length %}
+  {% if wish_count <= 6 %}
+    {% set cols = 'cols-2' %}
+  {% elif wish_count <= 15 %}
+    {% set cols = 'cols-3' %}
+  {% else %}
+    {% set cols = 'cols-4' %}
+  {% endif %}
+  {% set compact = wish_count > 20 %}
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+  <div style="background: linear-gradient(to bottom, #ffffff, #f5f3ff); padding: 4rem 0;">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;">
+
+      <!-- Header with counter -->
+      <div style="text-align: center; margin-bottom: 2.5rem;">
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: #1f2937; margin-bottom: 0.5rem;">
+          Every Wish, Just for You
+        </h2>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 0.75rem;">
+          <span class="wish-counter">💌 {{ wish_count }} heartfelt wishes</span>
+        </div>
+      </div>
+
+      <!-- Masonry grid — auto columns based on count -->
+      <div class="masonry-grid {{ cols }} {% if compact %}compact{% endif %}"
+           style="column-gap: 1.25rem;">
         {% for wish in card.wishes %}
-        <div class="wish-tile card-{{ wish.color }}" style="border-radius: 1rem; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
-          <div style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.75rem;">
-            <span style="font-size: 2rem; flex-shrink: 0; line-height: 1;">{{ wish.emoji }}</span>
-            <div>
-              <p style="font-weight: 700; font-size: 1rem; color: #111827; margin: 0 0 2px 0;">{{ wish.contributor_name }}</p>
-              <p style="font-size: 0.75rem; color: #9ca3af; margin: 0;">{{ wish.created_at.strftime('%b %d, %Y') }}</p>
+        <div class="wish-tile card-{{ wish.color }}"
+             style="margin-bottom: 1.25rem; border-radius: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.07);">
+          <div class="wish-tile-inner" style="padding: 1.25rem 1.4rem;">
+            <div style="display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.6rem;">
+              <span class="wish-emoji" style="font-size: 1.75rem; flex-shrink: 0; line-height: 1;">{{ wish.emoji }}</span>
+              <div>
+                <p class="wish-name" style="font-weight: 700; font-size: 0.95rem; color: #111827; margin: 0 0 1px 0;">{{ wish.contributor_name }}</p>
+                <p class="wish-date" style="font-size: 0.7rem; color: #9ca3af; margin: 0;">{{ wish.created_at.strftime('%b %d, %Y') }}</p>
+              </div>
             </div>
+            <p class="wish-message" style="color: #374151; font-size: 0.88rem; line-height: 1.6; font-style: italic; margin: 0;">
+              "{{ wish.message }}"
+            </p>
           </div>
-          <p style="color: #374151; font-size: 0.9rem; line-height: 1.6; font-style: italic; margin: 0;">
-            "{{ wish.message }}"
-          </p>
         </div>
         {% endfor %}
       </div>
+
+      {% if wish_count > 20 %}
+      <p style="text-align: center; color: #9ca3af; font-size: 0.8rem; margin-top: 1rem;">
+        Scroll up to read every single wish 💛
+      </p>
+      {% endif %}
+
     </div>
   </div>
   {% endif %}
