@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}WishTogether – Group Birthday Cards That Last Forever{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="relative overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50"></div>
+  <!-- Floating balloons background -->
+  <div class="absolute top-10 left-10 text-6xl opacity-20 balloon">🎈</div>
+  <div class="absolute top-20 right-20 text-5xl opacity-20 balloon">🎉</div>
+  <div class="absolute bottom-20 left-20 text-4xl opacity-20 balloon">✨</div>
+  <div class="absolute top-40 left-1/3 text-5xl opacity-10 balloon">🎊</div>
+  <div class="absolute bottom-10 right-10 text-4xl opacity-20 balloon">🎈</div>
+
+  <div class="relative max-w-4xl mx-auto px-6 py-24 text-center">
+    <div class="inline-flex items-center gap-2 bg-white rounded-full px-4 py-2 text-sm text-purple-600 font-medium shadow-sm mb-8 border border-purple-100">
+      <span>✨</span> More than just "Happy Birthday" 
+    </div>
+
+    <h1 class="font-display text-5xl md:text-7xl font-black text-gray-900 leading-tight mb-6">
+      A Birthday Card They'll
+      <span class="bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
+        Keep Forever
+      </span>
+    </h1>
+
+    <p class="text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+      Gather heartfelt wishes from everyone — friends, family, colleagues — into one beautiful card. 
+      No more forgotten WhatsApp messages. A keepsake they can revisit for a lifetime.
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="/create"
+         class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-8 py-4 rounded-2xl text-lg font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all">
+        🎂 Create a Birthday Card
+      </a>
+      <a href="#how-it-works"
+         class="inline-flex items-center justify-center gap-2 bg-white text-gray-700 px-8 py-4 rounded-2xl text-lg font-semibold shadow-sm hover:shadow-md transition-all border border-gray-200">
+        See how it works →
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Preview cards strip -->
+<section class="py-12 bg-white">
+  <div class="max-w-6xl mx-auto px-6">
+    <p class="text-center text-gray-500 text-sm font-medium uppercase tracking-wider mb-8">Sample wishes from real cards</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="card-purple rounded-2xl p-5 wish-card shadow-sm">
+        <div class="text-3xl mb-3">🌟</div>
+        <p class="text-gray-700 italic text-sm leading-relaxed">"Wishing you a year full of laughter, love, and all the adventures you deserve. You're truly one of a kind!"</p>
+        <p class="text-purple-600 font-semibold text-sm mt-3">— Priya & Rahul</p>
+      </div>
+      <div class="card-pink rounded-2xl p-5 wish-card shadow-sm">
+        <div class="text-3xl mb-3">🎉</div>
+        <p class="text-gray-700 italic text-sm leading-relaxed">"Every year you get wiser, warmer, and more wonderful. Happy Birthday! Can't wait to celebrate with you!"</p>
+        <p class="text-pink-600 font-semibold text-sm mt-3">— The Sharma Family</p>
+      </div>
+      <div class="card-teal rounded-2xl p-5 wish-card shadow-sm">
+        <div class="text-3xl mb-3">✨</div>
+        <p class="text-gray-700 italic text-sm leading-relaxed">"May this birthday be the start of your best chapter yet. So grateful to have you in our lives."</p>
+        <p class="text-teal-600 font-semibold text-sm mt-3">— Team Bangalore 🎊</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section id="how-it-works" class="py-20 bg-gray-50">
+  <div class="max-w-5xl mx-auto px-6">
+    <div class="text-center mb-14">
+      <h2 class="font-display text-4xl font-bold text-gray-900 mb-4">How WishTogether Works</h2>
+      <p class="text-gray-500 text-lg">Three simple steps to create something unforgettable</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="text-center">
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-400 to-pink-600 text-white text-2xl flex items-center justify-center mx-auto mb-4 shadow-md">
+          🎨
+        </div>
+        <div class="text-xs font-bold text-pink-500 uppercase tracking-wider mb-2">Step 1 — Organizer</div>
+        <h3 class="font-semibold text-gray-800 text-lg mb-2">Create the Card</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">Enter the birthday person's name, pick a theme, and write your own message. Takes 30 seconds.</p>
+      </div>
+
+      <div class="text-center">
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-400 to-purple-600 text-white text-2xl flex items-center justify-center mx-auto mb-4 shadow-md">
+          🔗
+        </div>
+        <div class="text-xs font-bold text-purple-500 uppercase tracking-wider mb-2">Step 2 — Everyone</div>
+        <h3 class="font-semibold text-gray-800 text-lg mb-2">Share the Link</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">Share a unique link with friends and family. Each person adds their personal message and emoji.</p>
+      </div>
+
+      <div class="text-center">
+        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-400 to-indigo-600 text-white text-2xl flex items-center justify-center mx-auto mb-4 shadow-md">
+          🎁
+        </div>
+        <div class="text-xs font-bold text-indigo-500 uppercase tracking-wider mb-2">Step 3 — Birthday Person</div>
+        <h3 class="font-semibold text-gray-800 text-lg mb-2">Send & Keep Forever</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">Reveal the card on their birthday. They can view it forever and download it as a keepsake image.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="py-20">
+  <div class="max-w-3xl mx-auto px-6 text-center">
+    <div class="bg-gradient-to-r from-pink-500 to-purple-600 rounded-3xl p-12 text-white shadow-2xl">
+      <h2 class="font-display text-4xl font-bold mb-4">Someone's birthday coming up?</h2>
+      <p class="text-pink-100 text-lg mb-8">Start collecting wishes now — it only takes a minute.</p>
+      <a href="/create"
+         class="inline-block bg-white text-purple-600 font-bold px-10 py-4 rounded-2xl text-lg hover:shadow-xl hover:scale-105 transition-all">
+        🎂 Create a Free Card
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

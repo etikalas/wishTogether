@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}WishTogether – Group Birthday Cards{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Georgia', 'serif'],
+            body: ['system-ui', 'sans-serif'],
+          },
+          animation: {
+            'float': 'float 3s ease-in-out infinite',
+            'bounce-slow': 'bounce 2s infinite',
+            'fade-in': 'fadeIn 0.5s ease-in',
+            'slide-up': 'slideUp 0.4s ease-out',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .font-display { font-family: 'Playfair Display', serif; }
+    .balloon { display: inline-block; animation: float 3s ease-in-out infinite; }
+    .balloon:nth-child(2) { animation-delay: 0.5s; }
+    .balloon:nth-child(3) { animation-delay: 1s; }
+    .balloon:nth-child(4) { animation-delay: 1.5s; }
+    .wish-card:hover { transform: translateY(-4px) rotate(0.5deg); }
+    .wish-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    /* Theme backgrounds */
+    .theme-sunset { background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #fda085 100%); }
+    .theme-ocean  { background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #66b3ba 100%); }
+    .theme-forest { background: linear-gradient(135deg, #134e5e 0%, #71b280 100%); }
+    .theme-golden { background: linear-gradient(135deg, #f6d365 0%, #fda085 50%, #f5576c 100%); }
+    .theme-midnight { background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%); }
+    /* Color swatches */
+    .swatch-purple { background: linear-gradient(135deg, #a78bfa, #7c3aed); }
+    .swatch-pink   { background: linear-gradient(135deg, #f9a8d4, #ec4899); }
+    .swatch-teal   { background: linear-gradient(135deg, #5eead4, #0d9488); }
+    .swatch-amber  { background: linear-gradient(135deg, #fcd34d, #d97706); }
+    .swatch-blue   { background: linear-gradient(135deg, #93c5fd, #2563eb); }
+    .swatch-rose   { background: linear-gradient(135deg, #fca5a5, #dc2626); }
+    /* Wish card colors */
+    .card-purple { background: linear-gradient(135deg, #f3e8ff, #ede9fe); border-left: 4px solid #7c3aed; }
+    .card-pink   { background: linear-gradient(135deg, #fdf2f8, #fce7f3); border-left: 4px solid #ec4899; }
+    .card-teal   { background: linear-gradient(135deg, #f0fdfa, #ccfbf1); border-left: 4px solid #0d9488; }
+    .card-amber  { background: linear-gradient(135deg, #fffbeb, #fef3c7); border-left: 4px solid #d97706; }
+    .card-blue   { background: linear-gradient(135deg, #eff6ff, #dbeafe); border-left: 4px solid #2563eb; }
+    .card-rose   { background: linear-gradient(135deg, #fff1f2, #ffe4e6); border-left: 4px solid #dc2626; }
+  </style>
+  {% block head %}{% endblock %}
+</head>
+<body class="min-h-screen bg-gray-50">
+  <!-- Nav -->
+  <nav class="bg-white border-b border-gray-100 px-6 py-4">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2 font-display text-xl font-bold text-gray-800">
+        <span class="text-2xl">🎂</span>
+        <span>WishTogether</span>
+      </a>
+      <a href="/create"
+         class="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-5 py-2 rounded-full text-sm font-semibold hover:shadow-lg hover:scale-105 transition-all">
+        + Create Card
+      </a>
+    </div>
+  </nav>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="text-center py-8 text-gray-400 text-sm mt-16">
+    Made with ❤️ — WishTogether
+  </footer>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

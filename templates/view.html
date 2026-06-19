@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+{% block title %}Happy Birthday {{ card.birthday_person }}! 🎂{% endblock %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  .shimmer-text {
+    background: linear-gradient(90deg, #fff 25%, rgba(255,255,255,0.5) 50%, #fff 75%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 3s linear infinite;
+  }
+  .wish-tile {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .wish-tile:hover {
+    transform: translateY(-5px) rotate(0.8deg);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+  }
+  .star-field {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .star {
+    position: absolute;
+    width: 4px; height: 4px;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 2s infinite alternate;
+    opacity: 0.4;
+  }
+  @keyframes twinkle {
+    0% { opacity: 0.2; transform: scale(0.8); }
+    100% { opacity: 0.8; transform: scale(1.2); }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Capture area for download -->
+<div id="cardContent">
+
+  <!-- Hero Banner -->
+  <div class="theme-{{ card.theme }} relative overflow-hidden">
+    <div class="star-field" id="starField"></div>
+
+    <div class="relative max-w-4xl mx-auto px-6 py-20 text-center">
+      <!-- Floating emojis -->
+      <div class="flex justify-center gap-6 mb-6">
+        <span class="text-5xl balloon">🎈</span>
+        <span class="text-6xl balloon">🎂</span>
+        <span class="text-5xl balloon">🎉</span>
+      </div>
+
+      <p class="text-white/80 text-sm font-medium uppercase tracking-widest mb-3">
+        🎊 A Celebration for
+      </p>
+      <h1 class="font-display text-6xl md:text-8xl font-black text-white leading-tight mb-4 drop-shadow-lg">
+        {{ card.birthday_person }}
+      </h1>
+
+      {% if card.birthday_date %}
+      <p class="text-white/80 text-lg mb-3">🗓️ {{ card.birthday_date }}</p>
+      {% endif %}
+
+      <p class="text-white/90 text-xl mt-2">
+        {{ card.wishes | length }} people love you! 💖
+      </p>
+    </div>
+  </div>
+
+  <!-- Organizer's message (hero message) -->
+  {% if card.organizer_message %}
+  <div class="bg-white">
+    <div class="max-w-3xl mx-auto px-6 py-12 text-center">
+      <p class="text-4xl mb-4">💌</p>
+      <p class="font-display text-2xl text-gray-800 italic leading-relaxed mb-4">
+        "{{ card.organizer_message }}"
+      </p>
+      <p class="text-purple-600 font-semibold">— {{ card.organizer_name }}</p>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Wishes Grid -->
+  {% if card.wishes %}
+  <div style="background: linear-gradient(to bottom, #ffffff, #f5f3ff); padding: 4rem 0;">
+    <div style="max-width: 1100px; margin: 0 auto; padding: 0 1.5rem;">
+      <h2 style="font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: #1f2937; text-align: center; margin-bottom: 0.5rem;">
+        Every Wish, Just for You
+      </h2>
+      <p style="text-align: center; color: #6b7280; margin-bottom: 3rem;">From everyone who loves you</p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+        {% for wish in card.wishes %}
+        <div class="wish-tile card-{{ wish.color }}" style="border-radius: 1rem; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+          <div style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.75rem;">
+            <span style="font-size: 2rem; flex-shrink: 0; line-height: 1;">{{ wish.emoji }}</span>
+            <div>
+              <p style="font-weight: 700; font-size: 1rem; color: #111827; margin: 0 0 2px 0;">{{ wish.contributor_name }}</p>
+              <p style="font-size: 0.75rem; color: #9ca3af; margin: 0;">{{ wish.created_at.strftime('%b %d, %Y') }}</p>
+            </div>
+          </div>
+          <p style="color: #374151; font-size: 0.9rem; line-height: 1.6; font-style: italic; margin: 0;">
+            "{{ wish.message }}"
+          </p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Footer closing message -->
+  <div class="theme-{{ card.theme }} py-16 text-center">
+    <p class="text-white/90 text-xl font-display italic mb-2">
+      "This card was made with love by {{ card.wishes | length + (1 if card.organizer_message else 0) }} people — keep it forever."
+    </p>
+    <p class="text-white/60 text-sm mt-4">Created with WishTogether ❤️</p>
+  </div>
+</div>
+
+<!-- Sticky Action Bar -->
+<div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur border-t border-gray-100 px-6 py-4 z-50">
+  <div class="max-w-2xl mx-auto flex flex-col sm:flex-row gap-3 items-center justify-between">
+    <p class="text-gray-600 text-sm hidden sm:block">
+      🎂 <strong>{{ card.birthday_person }}</strong> — your card from {{ card.wishes | length }} people
+    </p>
+    <div class="flex gap-3">
+      <button onclick="shareCard()"
+              class="flex items-center gap-2 bg-purple-100 text-purple-700 px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-purple-200 transition">
+        🔗 Share
+      </button>
+      <button onclick="downloadCard()"
+              id="downloadBtn"
+              class="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:shadow-lg transition">
+        📥 Save Card
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="h-20"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Launch confetti on load
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.5 },
+        colors: ['#f093fb', '#f5576c', '#fda085', '#667eea', '#764ba2'],
+      });
+    }, 500);
+
+    setTimeout(() => {
+      confetti({
+        particleCount: 80,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ['#f6d365', '#fda085'],
+      });
+      confetti({
+        particleCount: 80,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ['#f093fb', '#667eea'],
+      });
+    }, 1200);
+  });
+
+  // Generate star field
+  const sf = document.getElementById('starField');
+  for (let i = 0; i < 40; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.animationDelay = Math.random() * 2 + 's';
+    star.style.width = (Math.random() * 3 + 2) + 'px';
+    star.style.height = star.style.width;
+    sf.appendChild(star);
+  }
+
+  // Share
+  function shareCard() {
+    const url = window.location.href;
+    if (navigator.share) {
+      navigator.share({
+        title: 'Happy Birthday {{ card.birthday_person }}! 🎂',
+        text: 'Check out this birthday card made just for you!',
+        url: url,
+      });
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        alert('Link copied! Share it with {{ card.birthday_person }}.');
+      });
+    }
+  }
+
+  // Download as image
+  async function downloadCard() {
+    const btn = document.getElementById('downloadBtn');
+    btn.textContent = '⏳ Generating...';
+    btn.disabled = true;
+
+    try {
+      const el = document.getElementById('cardContent');
+      const canvas = await html2canvas(el, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+        windowWidth: 1200,
+      });
+
+      const link = document.createElement('a');
+      link.download = 'birthday-card-{{ card.birthday_person | replace(" ", "-") }}.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (err) {
+      alert('Download failed. Try right-clicking and saving the page instead.');
+    } finally {
+      btn.textContent = '📥 Save Card';
+      btn.disabled = false;
+    }
+  }
+</script>
+{% endblock %}

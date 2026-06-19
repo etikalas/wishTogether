@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: wishtogether
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: wishtogether-db
+          property: connectionString
+
+databases:
+  - name: wishtogether-db
+    plan: free
