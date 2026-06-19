@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WishTogether – Layout Examples</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body { font-family: 'Inter', sans-serif; background: #f8f7ff; }
+  .font-display { font-family: 'Playfair Display', serif; }
+
+  /* Card colors */
+  .card-purple { background: linear-gradient(135deg,#f3e8ff,#ede9fe); border-left:4px solid #7c3aed; }
+  .card-pink   { background: linear-gradient(135deg,#fdf2f8,#fce7f3); border-left:4px solid #ec4899; }
+  .card-teal   { background: linear-gradient(135deg,#f0fdfa,#ccfbf1); border-left:4px solid #0d9488; }
+  .card-amber  { background: linear-gradient(135deg,#fffbeb,#fef3c7); border-left:4px solid #d97706; }
+  .card-blue   { background: linear-gradient(135deg,#eff6ff,#dbeafe); border-left:4px solid #2563eb; }
+  .card-rose   { background: linear-gradient(135deg,#fff1f2,#ffe4e6); border-left:4px solid #dc2626; }
+
+  /* Scrapbook tilts */
+  .wish-tile { transition: transform 0.2s, box-shadow 0.2s; break-inside: avoid; display: inline-block; width: 100%; }
+  .wish-tile:nth-child(3n+1) { transform: rotate(-0.6deg); }
+  .wish-tile:nth-child(3n+2) { transform: rotate(0.5deg); }
+  .wish-tile:nth-child(3n+3) { transform: rotate(-0.3deg); }
+  .wish-tile:hover { transform: translateY(-4px) rotate(0deg) scale(1.02) !important; box-shadow: 0 16px 32px rgba(0,0,0,0.12) !important; }
+
+  /* Masonry */
+  .masonry { column-gap: 1rem; }
+  .masonry.c2 { columns: 2; }
+  .masonry.c3 { columns: 3; }
+  .masonry.c4 { columns: 4; }
+
+  /* Compact */
+  .compact .wish-date { display: none; }
+  .compact .wish-inner { padding: 0.8rem 1rem !important; }
+  .compact .wish-emoji { font-size: 1.4rem !important; }
+  .compact .wish-name  { font-size: 0.8rem !important; }
+  .compact .wish-msg   { font-size: 0.75rem !important; line-height: 1.4 !important; }
+
+  /* Tab styles */
+  .tab { cursor: pointer; padding: 10px 22px; border-radius: 999px; font-weight: 600; font-size: 0.9rem; transition: all 0.2s; }
+  .tab.active { background: linear-gradient(135deg, #ec4899, #7c3aed); color: white; box-shadow: 0 4px 14px rgba(124,58,237,0.3); }
+  .tab:not(.active) { background: white; color: #6b7280; border: 1px solid #e5e7eb; }
+  .tab:not(.active):hover { border-color: #7c3aed; color: #7c3aed; }
+
+  .demo-panel { display: none; }
+  .demo-panel.active { display: block; }
+
+  /* Counter chip */
+  .chip { display:inline-flex; align-items:center; gap:6px; background:white; border:1px solid #e5e7eb; border-radius:999px; padding:4px 14px; font-size:0.78rem; color:#6b7280; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+
+  @keyframes tileIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+  .wish-tile { animation: tileIn 0.3s ease both; }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- Header -->
+<div style="background: linear-gradient(135deg,#f093fb,#f5576c,#fda085); padding: 2.5rem 1.5rem; text-align:center;">
+  <h1 class="font-display" style="font-size:2.5rem;font-weight:900;color:white;margin-bottom:0.5rem;">Layout Preview</h1>
+  <p style="color:rgba(255,255,255,0.85); font-size:1rem;">See how WishTogether looks with different numbers of wishes</p>
+</div>
+
+<!-- Tabs -->
+<div style="background:white; border-bottom:1px solid #f3f4f6; padding:1rem 1.5rem; position:sticky; top:0; z-index:10; display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+  <button class="tab active" onclick="show('p3')">😊 3 Wishes</button>
+  <button class="tab" onclick="show('p10')">🎉 10 Wishes</button>
+  <button class="tab" onclick="show('p20')">🎊 20 Wishes</button>
+  <button class="tab" onclick="show('p35')">🥳 35 Wishes</button>
+</div>
+
+<!-- ══════════ PANEL: 3 wishes ══════════ -->
+<div id="p3" class="demo-panel active" style="max-width:900px;margin:2.5rem auto;padding:0 1.5rem;">
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
+    <span style="background:#dcfce7;color:#16a34a;font-weight:700;padding:4px 14px;border-radius:999px;font-size:0.8rem;">3 Wishes → 2 columns, full size</span>
+    <span style="color:#9ca3af;font-size:0.85rem;">Perfect for close family cards</span>
+  </div>
+  <div style="text-align:center;margin-bottom:1.5rem;">
+    <h2 class="font-display" style="font-size:1.8rem;font-weight:700;color:#1f2937;">Every Wish, Just for You</h2>
+    <div style="margin-top:0.5rem;"><span class="chip">💌 3 heartfelt wishes</span></div>
+  </div>
+  <div class="masonry c2">
+    <div class="wish-tile card-rose" style="margin-bottom:1rem;border-radius:1rem;">
+      <div style="padding:1.4rem;">
+        <div style="display:flex;align-items:flex-start;gap:0.75rem;margin-bottom:0.75rem;">
+          <span style="font-size:2rem;">❤️</span>
+          <div>
+            <p style="font-weight:700;font-size:1rem;color:#111827;margin:0 0 2px 0;">Suma</p>
+            <p class="wish-date" style="font-size:0.72rem;color:#9ca3af;margin:0;">Jun 19, 2026</p>
+          </div>
+        </div>
+        <p style="color:#374151;font-size:0.9rem;line-height:1.6;font-style:italic;margin:0;">"Wishing you all the happiness and love in the world. You deserve every good thing that comes your way! Happy Birthday!"</p>
+      </div>
+    </div>
+    <div class="wish-tile card-purple" style="margin-bottom:1rem;border-radius:1rem;">
+      <div style="padding:1.4rem;">
+        <div style="display:flex;align-items:flex-start;gap:0.75rem;margin-bottom:0.75rem;">
+          <span style="font-size:2rem;">🌟</span>
+          <div>
+            <p style="font-weight:700;font-size:1rem;color:#111827;margin:0 0 2px 0;">Ravi & Priya</p>
+            <p class="wish-date" style="font-size:0.72rem;color:#9ca3af;margin:0;">Jun 19, 2026</p>
+          </div>
+        </div>
+        <p style="color:#374151;font-size:0.9rem;line-height:1.6;font-style:italic;margin:0;">"Every year you grow wiser and more wonderful. Can't wait to celebrate with you. This one's going to be special!"</p>
+      </div>
+    </div>
+    <div class="wish-tile card-teal" style="margin-bottom:1rem;border-radius:1rem;">
+      <div style="padding:1.4rem;">
+        <div style="display:flex;align-items:flex-start;gap:0.75rem;margin-bottom:0.75rem;">
+          <span style="font-size:2rem;">🎂</span>
+          <div>
+            <p style="font-weight:700;font-size:1rem;color:#111827;margin:0 0 2px 0;">The Sharma Family</p>
+            <p class="wish-date" style="font-size:0.72rem;color:#9ca3af;margin:0;">Jun 19, 2026</p>
+          </div>
+        </div>
+        <p style="color:#374151;font-size:0.9rem;line-height:1.6;font-style:italic;margin:0;">"May your birthday be the start of the most beautiful chapter of your life. We love you so much!"</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PANEL: 10 wishes ══════════ -->
+<div id="p10" class="demo-panel" style="max-width:1100px;margin:2.5rem auto;padding:0 1.5rem;">
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
+    <span style="background:#dbeafe;color:#2563eb;font-weight:700;padding:4px 14px;border-radius:999px;font-size:0.8rem;">10 Wishes → 3 columns, full size</span>
+    <span style="color:#9ca3af;font-size:0.85rem;">Great for office or friend groups</span>
+  </div>
+  <div style="text-align:center;margin-bottom:1.5rem;">
+    <h2 class="font-display" style="font-size:1.8rem;font-weight:700;color:#1f2937;">Every Wish, Just for You</h2>
+    <div style="margin-top:0.5rem;"><span class="chip">💌 10 heartfelt wishes</span></div>
+  </div>
+  <div class="masonry c3">
+    <!-- 10 varied wishes -->
+    <div class="wish-tile card-rose" style="margin-bottom:1rem;border-radius:1rem;"><div style="padding:1.3rem;"><div style="display:flex;gap:0.6rem;margin-bottom:0.6rem;align-items:flex-start;"><span style="font-size:1.7rem;">❤️</span><div><p style="font-weight:700;font-size:0.95rem;color:#111827;margin:0 0 1px 0;">Suma</p><p class="wish-date" style="font-size:0.7rem;color:#9ca3af;margin:0;">Jun 19</p></div></div><p style="color:#374151;font-size:0.88rem;line-height:1.6;font-style:italic;margin:0;">"Happy Birthday! You bring so much joy to everyone around you."</p></div></div>
+    <div class="wish-tile card-blue" style="margin-bottom:1rem;border-radius:1rem;"><div style="padding:1.3rem;"><div style="display:flex;gap:0.6rem;margin-bottom:0.6rem;align-items:flex-start;"><span style="font-size:1.7rem;">🎉</span><div><p style="font-weight:700;font-size:0.95rem;color:#111827;margin:0 0 1px 0;">Arjun</p><p class="wish-date" style="font-size:0.7rem;color:#9ca3af;margin:0;">Jun 19</p></div></div><p style="color:#374151;font-size:0.88rem;line-height:1.6;font-style:italic;margin:0;">"May this year bring you everything you've been working towards. Proud of you!"</p></div></div>
+    <div class="wish-tile card-amber" style="margin-bottom:1rem;border-radius:1rem;"><div style="padding:1.3rem;"><div style="display:flex;gap:0.6rem;margin-bottom:0.6rem;align-items:flex-start;"><span style="font-size:1.7rem;">✨</span><div><p style="font-weight:700;font-size:0.95rem;color:#111827;margin:0 0 1px 0;">Team Bangalore</p><p class="wish-date" style="font-size:0.7rem;color:#9ca3af;margin:0;">Jun 19</p></div></div><p style="color:#374151;font-size:0.88rem;line-height:1.6;font-style:italic;margin:0;">"The whole team wishes you an amazing birthday! Office isn't the same without you."</p></div></div>
+    <div class="wish-tile card-purple" style="margin-bottom:1rem;border-radius:1rem;"><div style="padding:1.3rem;"><div style="display:flex;gap:0.6rem;margin-bottom:0.6rem;align-items:flex-start;"><span style="font-size:1.7rem;">🌸</span><div><p style="font-weight:700;font-size:0.95rem;color:#111827;margin:0 0 1px 0;">Nisha</p><p class="wish-date" style="font-size:0.7rem;color:#9ca3af;margin:0;">Jun 19</p></div></div><p style="color:#374151;font-size:0.88rem;line-height:1.6;font-style:italic;margin:0;">"Another year of being fabulous! Hope your day is as wonderful as you are."</p></div></div>
+    <div class="wish-tile card-teal" style="margin-bottom:1rem;border-radius:1rem;"><div style="padding:1.3rem;"><div style="display:flex;gap:0.6rem;margin-bottom:0.6rem;align-items:flex-start;"><span style="font-size:1.7rem;">🥂</span><div><p style="font-weight:700;font-size:0.95rem;color:#111827;margin:0 0 1px 0;">Ravi & Deepa</p><p class="wish-date" style="font-size:0.7rem;color:#9ca3af;margin:0;">Jun 19</p></div></div><p style="color:#374151;font-size:0.88rem;line-height:1.6;font-style:italic;margin:0;">"Cheers to you and to many more years of adventures, laughter and good food!"</p></div></div>
+    <div class="wish-tile card-pink" style="margin-bottom:1rem;border-radius:1rem;"><div style="padding:1.3rem;"><div style="display:flex;gap:0.6rem;margin-bottom:0.6rem;align-items:flex-start;"><span style="font-size:1.7rem;">🦋</span><div><p style="font-weight:700;font-size:0.95rem;color:#111827;margin:0 0 1px 0;">Kavitha</p><p class="wish-date" style="font-size:0.7rem;color:#9ca3af;margin:0;">Jun 19</p></div></div><p style="color:#374151;font-size:0.88rem;line-height:1.6;font-style:italic;margin:0;">"You've blossomed so much. Wishing you a day as beautiful as your smile!"</p></div></div>
+    <div class="wish-tile card-rose" style="margin-bottom:1rem;border-radius:1rem;"><div style="padding:1.3rem;"><div style="display:flex;gap:0.6rem;margin-bottom:0.6rem;align-items:flex-start;"><span style="font-size:1.7rem;">🎁</span><div><p style="font-weight:700;font-size:0.95rem;color:#111827;margin:0 0 1px 0;">Suresh & Anitha</p><p class="wish-date" style="font-size:0.7rem;color:#9ca3af;margin:0;">Jun 19</p></div></div><p style="color:#374151;font-size:0.88rem;line-height:1.6;font-style:italic;margin:0;">"Your kindness makes the world better. Grateful to know you. Happy birthday!"</p></div></div>
+    <div class="wish-tile card-blue" style="margin-bottom:1rem;border-radius:1rem;"><div style="padding:1.3rem;"><div style="display:flex;gap:0.6rem;margin-bottom:0.6rem;align-items:flex-start;"><span style="font-size:1.7rem;">🌻</span><div><p style="font-weight:700;font-size:0.95rem;color:#111827;margin:0 0 1px 0;">Hari</p><p class="wish-date" style="font-size:0.7rem;color:#9ca3af;margin:0;">Jun 19</p></div></div><p style="color:#374151;font-size:0.88rem;line-height:1.6;font-style:italic;margin:0;">"Keep shining bright. The world needs more people like you in it!"</p></div></div>
+    <div class="wish-tile card-amber" style="margin-bottom:1rem;border-radius:1rem;"><div style="padding:1.3rem;"><div style="display:flex;gap:0.6rem;margin-bottom:0.6rem;align-items:flex-start;"><span style="font-size:1.7rem;">🎊</span><div><p style="font-weight:700;font-size:0.95rem;color:#111827;margin:0 0 1px 0;">College Gang</p><p class="wish-date" style="font-size:0.7rem;color:#9ca3af;margin:0;">Jun 19</p></div></div><p style="color:#374151;font-size:0.88rem;line-height:1.6;font-style:italic;margin:0;">"Ten years of friendship and counting! Here's to many more memories."</p></div></div>
+    <div class="wish-tile card-purple" style="margin-bottom:1rem;border-radius:1rem;"><div style="padding:1.3rem;"><div style="display:flex;gap:0.6rem;margin-bottom:0.6rem;align-items:flex-start;"><span style="font-size:1.7rem;">🎈</span><div><p style="font-weight:700;font-size:0.95rem;color:#111827;margin:0 0 1px 0;">Meera</p><p class="wish-date" style="font-size:0.7rem;color:#9ca3af;margin:0;">Jun 19</p></div></div><p style="color:#374151;font-size:0.88rem;line-height:1.6;font-style:italic;margin:0;">"Big hugs from afar! Missing you today but thinking of you always."</p></div></div>
+  </div>
+</div>
+
+<!-- ══════════ PANEL: 20 wishes ══════════ -->
+<div id="p20" class="demo-panel" style="max-width:1200px;margin:2.5rem auto;padding:0 1.5rem;">
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+    <span style="background:#fef3c7;color:#d97706;font-weight:700;padding:4px 14px;border-radius:999px;font-size:0.8rem;">20 Wishes → 4 columns, full size</span>
+    <span style="color:#9ca3af;font-size:0.85rem;">Extended family + friend + colleague cards</span>
+  </div>
+  <div style="text-align:center;margin-bottom:1.5rem;">
+    <h2 class="font-display" style="font-size:1.8rem;font-weight:700;color:#1f2937;">Every Wish, Just for You</h2>
+    <div style="margin-top:0.5rem;"><span class="chip">💌 20 heartfelt wishes</span></div>
+  </div>
+  <div class="masonry c4" id="grid20"></div>
+</div>
+
+<!-- ══════════ PANEL: 35 wishes ══════════ -->
+<div id="p35" class="demo-panel" style="max-width:1200px;margin:2.5rem auto;padding:0 1.5rem;">
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+    <span style="background:#fce7f3;color:#be185d;font-weight:700;padding:4px 14px;border-radius:999px;font-size:0.8rem;">35 Wishes → 4 columns, compact mode</span>
+    <span style="color:#9ca3af;font-size:0.85rem;">Big celebrations — whole office, large family, reunion</span>
+  </div>
+  <div style="text-align:center;margin-bottom:1.5rem;">
+    <h2 class="font-display" style="font-size:1.8rem;font-weight:700;color:#1f2937;">Every Wish, Just for You</h2>
+    <div style="margin-top:0.5rem;"><span class="chip">💌 35 heartfelt wishes</span></div>
+  </div>
+  <div class="masonry c4 compact" id="grid35"></div>
+  <p style="text-align:center;color:#9ca3af;font-size:0.8rem;margin-top:1rem;">Scroll up to read every single wish 💛</p>
+</div>
+
+<div style="height:4rem;"></div>
+
+<script>
+const NAMES = ["Priya","Rahul","Anitha","Kiran","Deepa","Vijay","Meera","Suresh","Lakshmi","Arjun","Nisha","Hari","Kavitha","Ravi","Suma","Dev","Pooja","Sanjay","Anjali","Kumar","Teja","Shruti","Anil","Bhavna","Chetan","Divya","Esha","Farhan","Geetha","Himesh","Isha","Jatin","Kriti","Lokesh","Mansi"];
+const MSGS  = [
+  "Wishing you a year full of love, laughter and amazing adventures!",
+  "You deserve all the happiness in the world. Happy Birthday!",
+  "May every dream you've ever had come true this year!",
+  "So grateful to have you in my life. Many more happy returns!",
+  "Keep shining bright — the world needs more of you!",
+  "Cheers to another lap around the sun. You're incredible!",
+  "Big hugs from afar. Thinking of you and missing you today!",
+  "Your kindness and warmth make everything better. HBD!",
+  "Here's to new beginnings, new adventures and a fantastic year ahead.",
+  "Ten years of friendship and still going strong. Love you!",
+];
+const EMOJIS = ["🎂","🎉","🌟","❤️","🎈","✨","🥂","🎊","🌸","🦋","🎁","🌻"];
+const COLORS = ["purple","pink","teal","amber","blue","rose"];
+
+function makeWish(i, compact=false) {
+  const name  = NAMES[i % NAMES.length];
+  const msg   = MSGS[i % MSGS.length];
+  const emoji = EMOJIS[i % EMOJIS.length];
+  const color = COLORS[i % COLORS.length];
+  const pad   = compact ? '0.85rem 1rem' : '1.25rem 1.3rem';
+  const efs   = compact ? '1.4rem' : '1.75rem';
+  const nfs   = compact ? '0.82rem' : '0.95rem';
+  const mfs   = compact ? '0.78rem' : '0.88rem';
+  const dateHTML = compact ? '' : `<p style="font-size:0.7rem;color:#9ca3af;margin:0;">Jun 19, 2026</p>`;
+  return `
+    <div class="wish-tile card-${color}" style="margin-bottom:1rem;border-radius:0.85rem;animation-delay:${Math.min(i*0.04,1.2)}s">
+      <div style="padding:${pad}">
+        <div style="display:flex;gap:0.6rem;margin-bottom:0.55rem;align-items:flex-start;">
+          <span style="font-size:${efs};flex-shrink:0;line-height:1">${emoji}</span>
+          <div>
+            <p style="font-weight:700;font-size:${nfs};color:#111827;margin:0 0 1px 0">${name}</p>
+            ${dateHTML}
+          </div>
+        </div>
+        <p style="color:#374151;font-size:${mfs};line-height:1.55;font-style:italic;margin:0">"${msg}"</p>
+      </div>
+    </div>`;
+}
+
+// Build 20-wish grid
+const g20 = document.getElementById('grid20');
+for (let i = 0; i < 20; i++) g20.innerHTML += makeWish(i, false);
+
+// Build 35-wish grid
+const g35 = document.getElementById('grid35');
+for (let i = 0; i < 35; i++) g35.innerHTML += makeWish(i, true);
+
+function show(id) {
+  document.querySelectorAll('.demo-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+</script>
+</body>
+</html>

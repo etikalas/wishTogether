@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Manage Card for {{ card.birthday_person }} – WishTogether{% endblock %}
+{% block title %}Manage Card for {{ card.honoree_name }} – WishTogether{% endblock %}
 
 {% block content %}
 <div class="max-w-2xl mx-auto px-6 py-14">
   <div class="text-center mb-8">
-    <span class="text-5xl">🎊</span>
+    <span class="text-5xl">{{ occasion.emoji }}</span>
     <h1 class="font-display text-3xl font-bold text-gray-900 mt-4 mb-2">
-      Card for {{ card.birthday_person }}
+      {{ occasion.label }} Card for {{ card.honoree_name }}
     </h1>
-    <p class="text-gray-500">Share the link below to collect wishes</p>
+    <p class="text-gray-500">Share the link below to collect messages</p>
   </div>
 
   <!-- Contribute link box -->
@@ -61,8 +61,8 @@
   <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
     <h2 class="font-semibold text-gray-800 mb-2">🎁 Ready to send the card?</h2>
     <p class="text-gray-500 text-sm mb-5">
-      When everyone has added their wishes, lock the card and share the view link with 
-      <strong>{{ card.birthday_person }}</strong>. Once locked, no more wishes can be added.
+      When everyone has added their messages, lock the card and share the view link with 
+      <strong>{{ card.honoree_name }}</strong>. Once locked, no more messages can be added.
     </p>
 
     {% if card.is_locked %}

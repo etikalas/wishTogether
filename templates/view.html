@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Happy Birthday {{ card.birthday_person }}! 🎂{% endblock %}
+{% block title %}{{ occasion.hero }} {{ card.honoree_name }}! {{ occasion.emoji }}{% endblock %}
 
 {% block head %}
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
@@ -114,24 +114,24 @@
     <div class="relative max-w-4xl mx-auto px-6 py-20 text-center">
       <!-- Floating emojis -->
       <div class="flex justify-center gap-6 mb-6">
-        <span class="text-5xl balloon">🎈</span>
-        <span class="text-6xl balloon">🎂</span>
-        <span class="text-5xl balloon">🎉</span>
+        <span class="text-5xl balloon">{{ occasion.emojis[0] }}</span>
+        <span class="text-6xl balloon">{{ occasion.emoji }}</span>
+        <span class="text-5xl balloon">{{ occasion.emojis[1] }}</span>
       </div>
 
       <p class="text-white/80 text-sm font-medium uppercase tracking-widest mb-3">
-        🎊 A Celebration for
+        🎊 {{ occasion.hero }}
       </p>
       <h1 class="font-display text-6xl md:text-8xl font-black text-white leading-tight mb-4 drop-shadow-lg">
-        {{ card.birthday_person }}
+        {{ card.honoree_name }}
       </h1>
 
-      {% if card.birthday_date %}
-      <p class="text-white/80 text-lg mb-3">🗓️ {{ card.birthday_date }}</p>
+      {% if card.occasion_date %}
+      <p class="text-white/80 text-lg mb-3">🗓️ {{ card.occasion_date }}</p>
       {% endif %}
 
       <p class="text-white/90 text-xl mt-2">
-        {{ card.wishes | length }} people love you! 💖
+        {{ card.wishes | length }} {{ occasion.subtext }}! 💖
       </p>
     </div>
   </div>
@@ -218,8 +218,8 @@
 <!-- Sticky Action Bar -->
 <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur border-t border-gray-100 px-6 py-4 z-50">
   <div class="max-w-2xl mx-auto flex flex-col sm:flex-row gap-3 items-center justify-between">
-    <p class="text-gray-600 text-sm hidden sm:block">
-      🎂 <strong>{{ card.birthday_person }}</strong> — your card from {{ card.wishes | length }} people
+      <p class="text-gray-600 text-sm hidden sm:block">
+      {{ occasion.emoji }} <strong>{{ card.honoree_name }}</strong> — {{ card.wishes | length }} messages from people who care
     </p>
     <div class="flex gap-3">
       <button onclick="shareCard()"
@@ -287,7 +287,7 @@
     const url = window.location.href;
     if (navigator.share) {
       navigator.share({
-        title: 'Happy Birthday {{ card.birthday_person }}! 🎂',
+        title: '{{ occasion.hero }} {{ card.honoree_name }}! {{ occasion.emoji }}',
         text: 'Check out this birthday card made just for you!',
         url: url,
       });
@@ -315,7 +315,7 @@
       });
 
       const link = document.createElement('a');
-      link.download = 'birthday-card-{{ card.birthday_person | replace(" ", "-") }}.png';
+      link.download = 'wishtogether-{{ card.honoree_name | replace(" ", "-") }}.png';
       link.href = canvas.toDataURL('image/png');
       link.click();
     } catch (err) {
