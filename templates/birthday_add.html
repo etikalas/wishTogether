@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Add a Birthday – WishTogether{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto px-6 py-12">
+  <div class="text-center mb-8">
+    <span class="text-5xl">🎂</span>
+    <h1 class="font-display text-3xl font-bold text-gray-900 mt-4 mb-2">Add a Birthday</h1>
+    <p class="text-gray-500">We'll email you 7 days, 2 days and 1 day before so you never forget.</p>
+  </div>
+
+  {% if error %}
+  <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-5 py-4 mb-6 text-sm">⚠️ {{ error }}</div>
+  {% endif %}
+
+  <form method="POST" action="/birthdays/add" class="bg-white rounded-3xl shadow-xl p-8 space-y-5">
+
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-2">
+        🎈 Whose birthday? <span class="text-red-400">*</span>
+      </label>
+      <input type="text" name="person_name" required placeholder="e.g. Mum, Ravi, Priya..."
+             class="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-400 transition">
+    </div>
+
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-2">
+        📅 Birthday Date <span class="text-red-400">*</span>
+      </label>
+      <input type="date" name="birth_date" required
+             class="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-400 transition">
+      <p class="text-xs text-gray-400 mt-1">Year is optional — we use it to calculate their age.</p>
+    </div>
+
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-2">
+        📧 Your Email (for reminders) <span class="text-red-400">*</span>
+      </label>
+      <input type="email" name="reminder_email" required placeholder="you@gmail.com"
+             class="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-400 transition">
+    </div>
+
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-2">
+        👤 Your Name <span class="text-red-400">*</span>
+      </label>
+      <input type="text" name="your_name" required placeholder="Your name"
+             class="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-400 transition">
+    </div>
+
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-2">
+        📝 Relationship / Notes <span class="text-gray-400 font-normal text-xs">(optional)</span>
+      </label>
+      <input type="text" name="notes" placeholder="e.g. Best friend, Sister, Manager..."
+             class="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-400 transition">
+    </div>
+
+    <div class="bg-purple-50 rounded-2xl p-4 text-sm text-purple-700">
+      <strong>🔔 You'll receive emails at:</strong>
+      <ul class="mt-1 space-y-0.5 text-purple-600">
+        <li>· 7 days before — "Start collecting wishes now"</li>
+        <li>· 2 days before — "Time to wrap up the card"</li>
+        <li>· 1 day before — "Last chance reminder"</li>
+      </ul>
+    </div>
+
+    <div class="flex gap-3">
+      <a href="/birthdays"
+         class="flex-1 text-center bg-gray-100 text-gray-600 font-semibold py-3.5 rounded-2xl hover:bg-gray-200 transition">
+        Cancel
+      </a>
+      <button type="submit"
+              class="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold py-3.5 rounded-2xl hover:shadow-xl transition-all">
+        Save Birthday 🎂
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

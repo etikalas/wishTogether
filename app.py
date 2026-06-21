@@ -1,9 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
-from datetime import datetime
+from datetime import datetime, date
 import uuid
 import os
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 app = Flask(__name__)
 
@@ -115,6 +118,18 @@ class Wish(db.Model):
     color            = db.Column(db.String(20), default='purple')
     created_at       = db.Column(db.DateTime, default=datetime.utcnow)
 
+class Birthday(db.Model):
+    id              = db.Column(db.Integer, primary_key=True)
+    person_name     = db.Column(db.String(100), nullable=False)
+    birth_date      = db.Column(db.String(10), nullable=False)   # YYYY-MM-DD or MM-DD
+    reminder_email  = db.Column(db.String(200), nullable=False)
+    your_name       = db.Column(db.String(100), nullable=False)
+    notes           = db.Column(db.Text)                          # optional notes / relationship
+    reminded_7      = db.Column(db.Integer, default=0)            # year last reminded at 7 days
+    reminded_2      = db.Column(db.Integer, default=0)
+    reminded_1      = db.Column(db.Integer, default=0)
+    created_at      = db.Column(db.DateTime, default=datetime.utcnow)
+
 def generate_slug(length=8):
     import random, string
     chars = string.ascii_letters + string.digits
@@ -220,6 +235,167 @@ def get_wishes(contribute_slug):
         'created_at': w.created_at.strftime('%b %d, %Y')
     } for w in card.wishes]
     return jsonify({'wishes': wishes, 'count': len(wishes)})
+
+# ─── Birthday registry ────────────────────────────────────────────────────────
+
+def days_until_birthday(birth_date_str):
+    """Return (days_until, next_birthday_date) for a birthday string YYYY-MM-DD or MM-DD."""
+    today = date.today()
+    try:
+        parts = birth_date_str.split('-')
+        if len(parts) == 3:
+            month, day = int(parts[1]), int(parts[2])
+        else:
+            month, day = int(parts[0]), int(parts[1])
+        next_bday = date(today.year, month, day)
+        if next_bday < today:
+            next_bday = date(today.year + 1, month, day)
+        return (next_bday - today).days, next_bday
+    except Exception:
+        return None, None
+
+def send_reminder_email(to_email, your_name, person_name, days_away, create_url):
+    smtp_user     = os.environ.get('SMTP_EMAIL', '')
+    smtp_password = os.environ.get('SMTP_APP_PASSWORD', '')
+    if not smtp_user or not smtp_password:
+        return False
+
+    if days_away == 7:
+        subject = f"🎂 {person_name}'s birthday is in 1 week!"
+        urgency = "You have a full week — perfect time to start collecting wishes from everyone."
+        action  = "Start collecting wishes now"
+    elif days_away == 2:
+        subject = f"⏰ {person_name}'s birthday is in 2 days!"
+        urgency = "2 days left! Start the card now so friends can add their wishes in time."
+        action  = "Create the card — 2 days left!"
+    else:
+        subject = f"🚨 {person_name}'s birthday is TOMORROW!"
+        urgency = "Last chance! Create the card today and share it with close friends."
+        action  = "Create today's card"
+
+    html = f"""
+    <div style="font-family:Inter,sans-serif;max-width:560px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+      <div style="background:linear-gradient(135deg,#f093fb,#f5576c,#fda085);padding:2.5rem;text-align:center;">
+        <div style="font-size:3.5rem;margin-bottom:0.5rem;">🎂</div>
+        <h1 style="color:white;font-size:1.6rem;margin:0;font-weight:800;">{person_name}'s Birthday</h1>
+        <p style="color:rgba(255,255,255,0.9);margin:0.5rem 0 0;font-size:1rem;">in <strong>{days_away} day{'s' if days_away > 1 else ''}</strong></p>
+      </div>
+      <div style="padding:2rem;">
+        <p style="color:#374151;font-size:1rem;line-height:1.6;">Hi <strong>{your_name}</strong>,</p>
+        <p style="color:#374151;font-size:1rem;line-height:1.6;">{urgency}</p>
+        <p style="color:#374151;font-size:1rem;line-height:1.6;">
+          Create a group card on <strong>WishTogether</strong> and share the link — 
+          friends and family can each add their own personal message. 
+          <strong>{person_name}</strong> gets a beautiful card they can keep forever. 💌
+        </p>
+        <div style="text-align:center;margin:2rem 0;">
+          <a href="{create_url}"
+             style="background:linear-gradient(135deg,#f093fb,#7c3aed);color:white;text-decoration:none;
+                    padding:14px 32px;border-radius:12px;font-weight:700;font-size:1rem;display:inline-block;">
+            {action} →
+          </a>
+        </div>
+        <p style="color:#9ca3af;font-size:0.8rem;text-align:center;">
+          This reminder was set up on WishTogether · 
+          <a href="{request.host_url}birthdays" style="color:#7c3aed;">Manage birthdays</a>
+        </p>
+      </div>
+    </div>
+    """
+
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = subject
+    msg['From']    = f"WishTogether 🎂 <{smtp_user}>"
+    msg['To']      = to_email
+    msg.attach(MIMEText(html, 'html'))
+
+    try:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+            server.login(smtp_user, smtp_password)
+            server.sendmail(smtp_user, to_email, msg.as_string())
+        return True
+    except Exception as e:
+        print(f"Email error: {e}")
+        return False
+
+@app.route('/birthdays')
+def birthdays():
+    all_bdays = Birthday.query.order_by(Birthday.person_name).all()
+    upcoming  = []
+    for b in all_bdays:
+        days, next_date = days_until_birthday(b.birth_date)
+        if days is not None:
+            upcoming.append({'birthday': b, 'days': days, 'next_date': next_date})
+    upcoming.sort(key=lambda x: x['days'])
+    return render_template('birthdays.html', upcoming=upcoming)
+
+@app.route('/birthdays/add', methods=['GET', 'POST'])
+def add_birthday():
+    if request.method == 'POST':
+        person_name    = request.form.get('person_name', '').strip()
+        birth_date     = request.form.get('birth_date', '').strip()
+        reminder_email = request.form.get('reminder_email', '').strip()
+        your_name      = request.form.get('your_name', '').strip()
+        notes          = request.form.get('notes', '').strip()
+
+        if not person_name or not birth_date or not reminder_email or not your_name:
+            return render_template('birthday_add.html',
+                                   error="Please fill in all required fields.")
+
+        b = Birthday(person_name=person_name, birth_date=birth_date,
+                     reminder_email=reminder_email, your_name=your_name, notes=notes)
+        db.session.add(b)
+        db.session.commit()
+        return redirect(url_for('birthdays'))
+
+    return render_template('birthday_add.html')
+
+@app.route('/birthdays/<int:bid>/delete', methods=['POST'])
+def delete_birthday(bid):
+    b = Birthday.query.get_or_404(bid)
+    db.session.delete(b)
+    db.session.commit()
+    return redirect(url_for('birthdays'))
+
+@app.route('/api/send-reminders')
+def send_reminders():
+    """Called daily by cron-job.org. Protected by CRON_SECRET env var."""
+    secret = os.environ.get('CRON_SECRET', 'wishtogether-cron')
+    if request.args.get('key') != secret:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    today     = date.today()
+    sent      = []
+    skipped   = []
+
+    for b in Birthday.query.all():
+        days, _ = days_until_birthday(b.birth_date)
+        if days is None:
+            continue
+
+        year = today.year
+        create_url = request.host_url + 'create'
+
+        if days == 7 and b.reminded_7 != year:
+            ok = send_reminder_email(b.reminder_email, b.your_name, b.person_name, 7, create_url)
+            if ok:
+                b.reminded_7 = year
+                sent.append(f"{b.person_name} (7 days) → {b.reminder_email}")
+        elif days == 2 and b.reminded_2 != year:
+            ok = send_reminder_email(b.reminder_email, b.your_name, b.person_name, 2, create_url)
+            if ok:
+                b.reminded_2 = year
+                sent.append(f"{b.person_name} (2 days) → {b.reminder_email}")
+        elif days == 1 and b.reminded_1 != year:
+            ok = send_reminder_email(b.reminder_email, b.your_name, b.person_name, 1, create_url)
+            if ok:
+                b.reminded_1 = year
+                sent.append(f"{b.person_name} (1 day) → {b.reminder_email}")
+        else:
+            skipped.append(f"{b.person_name} ({days} days away)")
+
+    db.session.commit()
+    return jsonify({'sent': sent, 'skipped': skipped, 'date': str(today)})
 
 # ─── Startup ──────────────────────────────────────────────────────────────────
 
