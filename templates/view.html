@@ -97,6 +97,14 @@
 
 {% block content %}
 
+<!-- Preview mode banner (only shown if card not locked) -->
+{% if not card.is_locked %}
+<div style="background:#fef3c7; border-bottom: 2px solid #f59e0b; padding: 10px; text-align:center; font-size:0.85rem; font-weight:600; color:#92400e;">
+  👀 Preview Mode — This card hasn't been sent yet. 
+  <a href="/manage/{{ card.contribute_slug }}" style="color:#7c3aed; text-decoration:underline; margin-left:8px;">← Back to manage</a>
+</div>
+{% endif %}
+
 <!-- Capture area for download -->
 <div id="cardContent">
 
