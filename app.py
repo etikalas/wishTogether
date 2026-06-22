@@ -9,9 +9,13 @@ from email.mime.text import MIMEText
 
 app = Flask(__name__)
 
-database_url = os.environ.get('DATABASE_URL', 'sqlite:///cards.db')
+database_url = os.environ.get('DATABASE_URL', 'sqlite:///cards.db').strip()
+# Fix Render's legacy postgres:// prefix
 if database_url.startswith('postgres://'):
     database_url = database_url.replace('postgres://', 'postgresql://', 1)
+# Ensure psycopg2 driver is specified
+if database_url.startswith('postgresql://') and '+' not in database_url.split('://')[0]:
+    database_url = database_url.replace('postgresql://', 'postgresql+psycopg2://', 1)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -397,11 +401,17 @@ def send_reminders():
     return jsonify({'sent': sent, 'skipped': skipped, 'date': str(today)})
 
 # ─── Startup ──────────────────────────────────────────────────────────────────
-# db.create_all() creates all tables on a fresh database.
-# No manual migration needed — models define the full schema.
+# Tables are created lazily on the first request so startup is instant
+# and Render's health check always passes.
 
-with app.app_context():
-    db.create_all()
+_db_ready = False
+
+@app.before_request
+def init_db():
+    global _db_ready
+    if not _db_ready:
+        db.create_all()
+        _db_ready = True
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
