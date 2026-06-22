@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import text
 from datetime import datetime, date
 import uuid
 import os
@@ -398,27 +397,11 @@ def send_reminders():
     return jsonify({'sent': sent, 'skipped': skipped, 'date': str(today)})
 
 # ─── Startup ──────────────────────────────────────────────────────────────────
+# db.create_all() creates all tables on a fresh database.
+# No manual migration needed — models define the full schema.
 
-try:
-    with app.app_context():
-        db.create_all()
-        is_pg = database_url.startswith('postgresql')
-        with db.engine.connect() as conn:
-            for col, typedef in [
-                ('occasion_type', "VARCHAR(30) DEFAULT 'birthday'"),
-                ('occasion_date', 'VARCHAR(20)'),
-                ('honoree_name',  "VARCHAR(100) DEFAULT ''"),
-            ]:
-                try:
-                    if is_pg:
-                        conn.execute(text(f"ALTER TABLE card ADD COLUMN IF NOT EXISTS {col} {typedef}"))
-                    else:
-                        conn.execute(text(f"ALTER TABLE card ADD COLUMN {col} {typedef}"))
-                    conn.commit()
-                except Exception:
-                    conn.rollback()
-except Exception as e:
-    print(f"Startup warning (non-fatal): {e}")
+with app.app_context():
+    db.create_all()
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
