@@ -9,6 +9,9 @@ from email.mime.text import MIMEText
 
 app = Flask(__name__)
 
+# Environment: "production", "staging", or "development"
+APP_ENV = os.environ.get('APP_ENV', 'development')
+
 database_url = os.environ.get('DATABASE_URL', 'sqlite:///cards.db').strip()
 # Fix Render's legacy postgres:// prefix
 if database_url.startswith('postgres://'):
@@ -22,6 +25,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
 
 db = SQLAlchemy(app)
+
+@app.context_processor
+def inject_env():
+    return {'APP_ENV': APP_ENV}
 
 # ─── Occasion catalogue ───────────────────────────────────────────────────────
 

@@ -72,6 +72,11 @@
   {% block head %}{% endblock %}
 </head>
 <body class="min-h-screen bg-gray-50">
+  {% if APP_ENV == 'staging' %}
+  <div class="bg-yellow-400 text-yellow-900 text-center text-xs font-bold py-1 tracking-wide">
+    STAGING — this is a test environment, not production
+  </div>
+  {% endif %}
   <!-- Nav -->
   <nav class="bg-white border-b border-gray-100 px-6 py-4">
     <div class="max-w-6xl mx-auto flex items-center justify-between">
