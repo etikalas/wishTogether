@@ -72,15 +72,8 @@
     font-weight: 500;
     box-shadow: 0 1px 4px rgba(0,0,0,0.06);
   }
-  /* Fade-in stagger for tiles */
-  @keyframes tileIn {
-    from { opacity: 0; transform: translateY(12px) scale(0.97); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-  }
-  .wish-tile { animation: tileIn 0.35s ease both; }
-  {% for i in range(1, 51) %}
-  .wish-tile:nth-child({{ i }}) { animation-delay: {{ [i * 0.04, 1.2] | min }}s; }
-  {% endfor %}
+  /* Ensure tiles are always fully visible */
+  .wish-tile { opacity: 1 !important; }
   .star-field {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -181,14 +174,14 @@
         <div class="wish-tile card-{{ wish.color }}"
              style="margin-bottom: 1.25rem; border-radius: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.07);">
           <div class="wish-tile-inner" style="padding: 1.25rem 1.4rem;">
-            <div style="display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.6rem;">
-              <span class="wish-emoji" style="font-size: 1.75rem; flex-shrink: 0; line-height: 1;">{{ wish.emoji }}</span>
+            <div style="display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.75rem;">
+              <span class="wish-emoji" style="font-size: 2rem; flex-shrink: 0; line-height: 1;">{{ wish.emoji }}</span>
               <div>
-                <p class="wish-name" style="font-weight: 700; font-size: 0.95rem; color: #111827; margin: 0 0 1px 0;">{{ wish.contributor_name }}</p>
-                <p class="wish-date" style="font-size: 0.7rem; color: #9ca3af; margin: 0;">{{ wish.created_at.strftime('%b %d, %Y') }}</p>
+                <p class="wish-name" style="font-weight: 800; font-size: 1rem; color: #111827; margin: 0 0 2px 0; opacity: 1;">{{ wish.contributor_name }}</p>
+                <p class="wish-date" style="font-size: 0.72rem; color: #6b7280; margin: 0; opacity: 1;">{{ wish.created_at.strftime('%b %d, %Y') }}</p>
               </div>
             </div>
-            <p class="wish-message" style="color: #374151; font-size: 0.88rem; line-height: 1.6; font-style: italic; margin: 0;">
+            <p class="wish-message" style="color: #1f2937; font-size: 0.92rem; line-height: 1.65; font-style: italic; margin: 0; opacity: 1;">
               "{{ wish.message }}"
             </p>
           </div>
