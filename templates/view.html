@@ -216,10 +216,18 @@
   </div>
 </div>
 
+<!-- "Keep forever" tip — only shown on locked cards -->
+{% if card.is_locked %}
+<div style="background:#f0fdf4; border-top: 1px solid #bbf7d0; padding: 12px 24px; text-align: center; font-size: 0.82rem; color: #166534;">
+  💾 <strong>Keep this card forever:</strong>
+  Download it as an image (📥) or save the full webpage (🌐) — both work without internet.
+</div>
+{% endif %}
+
 <!-- Sticky Action Bar -->
 <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur border-t border-gray-100 px-6 py-4 z-50">
   <div class="max-w-2xl mx-auto flex flex-col sm:flex-row gap-3 items-center justify-between">
-      <p class="text-gray-600 text-sm hidden sm:block">
+    <p class="text-gray-600 text-sm hidden sm:block">
       {{ occasion.emoji }} <strong>{{ card.honoree_name }}</strong> — {{ card.wishes | length }} messages from people who care
     </p>
     <div class="flex gap-3">
@@ -227,10 +235,16 @@
               class="flex items-center gap-2 bg-purple-100 text-purple-700 px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-purple-200 transition">
         🔗 Share
       </button>
+      {% if card.is_locked %}
+      <a href="/view/{{ card.view_slug }}/export"
+         class="flex items-center gap-2 bg-green-100 text-green-700 px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-green-200 transition">
+        🌐 Save Webpage
+      </a>
+      {% endif %}
       <button onclick="downloadCard()"
               id="downloadBtn"
               class="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:shadow-lg transition">
-        📥 Save Card
+        📥 Save Image
       </button>
     </div>
   </div>

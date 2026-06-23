@@ -236,6 +236,19 @@ def view_card(view_slug):
     card = Card.query.filter_by(view_slug=view_slug).first_or_404()
     return render_template('view.html', card=card, occasion=get_occasion(card))
 
+@app.route('/view/<view_slug>/export')
+def export_card(view_slug):
+    """Download the card as a self-contained HTML file that works offline forever."""
+    from flask import make_response
+    card = Card.query.filter_by(view_slug=view_slug).first_or_404()
+    occasion = get_occasion(card)
+    html = render_template('card_export.html', card=card, occasion=occasion)
+    response = make_response(html)
+    filename = f"wishtogether-{card.honoree_name.replace(' ', '-')}.html"
+    response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+    response.headers['Content-Type'] = 'text/html; charset=utf-8'
+    return response
+
 @app.route('/api/card/<contribute_slug>/wishes')
 def get_wishes(contribute_slug):
     card = Card.query.filter_by(contribute_slug=contribute_slug).first_or_404()

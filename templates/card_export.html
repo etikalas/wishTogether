@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ occasion.hero }} {{ card.honoree_name }}! {{ occasion.emoji }}</title>
+  <style>
+    /* ── Reset & base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f9fafb;
+      color: #1f2937;
+      min-height: 100vh;
+    }
+
+    /* ── Saved-file banner ── */
+    .saved-banner {
+      background: #d1fae5;
+      border-bottom: 2px solid #10b981;
+      padding: 10px 24px;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #065f46;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      {% if card.theme == 'sunset' %}
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #fda085 100%);
+      {% elif card.theme == 'ocean' %}
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #66b3ba 100%);
+      {% elif card.theme == 'forest' %}
+      background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
+      {% elif card.theme == 'golden' %}
+      background: linear-gradient(135deg, #f6d365 0%, #fda085 50%, #f5576c 100%);
+      {% elif card.theme == 'midnight' %}
+      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+      {% else %}
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #fda085 100%);
+      {% endif %}
+      padding: 5rem 1.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-sub {
+      color: rgba(255,255,255,0.8);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+    .hero-name {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: clamp(3.5rem, 10vw, 6rem);
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1.05;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      margin-bottom: 1rem;
+    }
+    .hero-date { color: rgba(255,255,255,0.8); font-size: 1.05rem; margin-bottom: 0.75rem; }
+    .hero-count { color: rgba(255,255,255,0.9); font-size: 1.15rem; }
+    .balloons { font-size: 3rem; margin-bottom: 1.5rem; display: flex; justify-content: center; gap: 1.5rem; }
+
+    /* ── Organizer message ── */
+    .org-msg {
+      background: #ffffff;
+      padding: 3rem 1.5rem;
+      text-align: center;
+    }
+    .org-msg-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+    .org-msg-text {
+      font-family: Georgia, serif;
+      font-size: 1.4rem;
+      color: #374151;
+      font-style: italic;
+      line-height: 1.7;
+      max-width: 640px;
+      margin: 0 auto 0.75rem;
+    }
+    .org-msg-name { color: #7c3aed; font-weight: 700; font-size: 1rem; }
+
+    /* ── Wishes section ── */
+    .wishes-section {
+      background: linear-gradient(to bottom, #ffffff, #f5f3ff);
+      padding: 3.5rem 1.5rem;
+    }
+    .wishes-header { text-align: center; margin-bottom: 2.5rem; }
+    .wishes-title {
+      font-family: Georgia, serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 0.5rem;
+    }
+    .wishes-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: 0.8rem;
+      color: #6b7280;
+      font-weight: 500;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    /* ── Masonry grid ── */
+    .masonry { column-gap: 1.25rem; max-width: 1200px; margin: 0 auto; }
+    {% set wish_count = card.wishes | length %}
+    {% if wish_count <= 6 %}
+    .masonry { columns: 2; }
+    {% elif wish_count <= 15 %}
+    .masonry { columns: 3; }
+    {% else %}
+    .masonry { columns: 4; }
+    {% endif %}
+    @media (max-width: 640px)  { .masonry { columns: 1 !important; } }
+    @media (max-width: 900px)  { .masonry { columns: 2 !important; } }
+
+    /* ── Wish tiles ── */
+    .wish-tile {
+      margin-bottom: 1.25rem;
+      border-radius: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      break-inside: avoid;
+      page-break-inside: avoid;
+      display: inline-block;
+      width: 100%;
+    }
+    .wish-tile:nth-child(3n+1) { transform: rotate(-0.6deg); }
+    .wish-tile:nth-child(3n+2) { transform: rotate(0.5deg); }
+    .wish-tile:nth-child(3n+3) { transform: rotate(-0.3deg); }
+    .tile-inner { padding: 1.25rem 1.4rem; }
+    .tile-header { display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.75rem; }
+    .tile-emoji { font-size: 2rem; flex-shrink: 0; line-height: 1; }
+    .tile-name { font-weight: 800; font-size: 1rem; color: #111827; margin: 0 0 2px; }
+    .tile-date { font-size: 0.72rem; color: #6b7280; margin: 0; }
+    .tile-msg { color: #1f2937; font-size: 0.92rem; line-height: 1.65; font-style: italic; margin: 0; }
+
+    {% if wish_count > 20 %}
+    .tile-inner { padding: 0.9rem 1rem !important; }
+    .tile-emoji  { font-size: 1.4rem !important; }
+    .tile-name   { font-size: 0.85rem !important; }
+    .tile-date   { display: none !important; }
+    .tile-msg    { font-size: 0.8rem !important; line-height: 1.45 !important; }
+    {% endif %}
+
+    /* ── Tile colour variants ── */
+    .card-purple { background: #f3e8ff; border-left: 5px solid #7c3aed; }
+    .card-pink   { background: #fce7f3; border-left: 5px solid #ec4899; }
+    .card-teal   { background: #ccfbf1; border-left: 5px solid #0d9488; }
+    .card-amber  { background: #fef3c7; border-left: 5px solid #d97706; }
+    .card-blue   { background: #dbeafe; border-left: 5px solid #2563eb; }
+    .card-rose   { background: #ffe4e6; border-left: 5px solid #dc2626; }
+
+    /* ── Footer ── */
+    .card-footer {
+      {% if card.theme == 'sunset' %}
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #fda085 100%);
+      {% elif card.theme == 'ocean' %}
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #66b3ba 100%);
+      {% elif card.theme == 'forest' %}
+      background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
+      {% elif card.theme == 'golden' %}
+      background: linear-gradient(135deg, #f6d365 0%, #fda085 50%, #f5576c 100%);
+      {% elif card.theme == 'midnight' %}
+      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+      {% else %}
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #fda085 100%);
+      {% endif %}
+      padding: 4rem 1.5rem;
+      text-align: center;
+    }
+    .footer-quote {
+      font-family: Georgia, serif;
+      font-size: 1.15rem;
+      font-style: italic;
+      color: rgba(255,255,255,0.9);
+      max-width: 600px;
+      margin: 0 auto 1rem;
+      line-height: 1.7;
+    }
+    .footer-brand { color: rgba(255,255,255,0.6); font-size: 0.85rem; }
+
+    /* ── Saved-at note ── */
+    .meta-note {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.78rem;
+      color: #9ca3af;
+      background: #f9fafb;
+      border-top: 1px solid #f3f4f6;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Saved-file reminder banner -->
+  <div class="saved-banner">
+    ✅ This card is saved on your device — it works offline, forever, no internet needed.
+    &nbsp;|&nbsp; Made with WishTogether ❤️
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="balloons">
+      <span>{{ occasion.emojis[0] }}</span>
+      <span>{{ occasion.emoji }}</span>
+      <span>{{ occasion.emojis[1] }}</span>
+    </div>
+    <p class="hero-sub">🎊 {{ occasion.hero }}</p>
+    <h1 class="hero-name">{{ card.honoree_name }}</h1>
+    {% if card.occasion_date %}
+    <p class="hero-date">🗓️ {{ card.occasion_date }}</p>
+    {% endif %}
+    <p class="hero-count">{{ card.wishes | length }} {{ occasion.subtext }}! 💖</p>
+  </div>
+
+  <!-- Organizer message -->
+  {% if card.organizer_message %}
+  <div class="org-msg">
+    <span class="org-msg-icon">💌</span>
+    <p class="org-msg-text">"{{ card.organizer_message }}"</p>
+    <p class="org-msg-name">— {{ card.organizer_name }}</p>
+  </div>
+  {% endif %}
+
+  <!-- Wishes -->
+  {% if card.wishes %}
+  <div class="wishes-section">
+    <div class="wishes-header">
+      <h2 class="wishes-title">Every Wish, Just for You</h2>
+      <span class="wishes-chip">💌 {{ card.wishes | length }} heartfelt wishes</span>
+    </div>
+    <div class="masonry">
+      {% for wish in card.wishes %}
+      <div class="wish-tile card-{{ wish.color }}">
+        <div class="tile-inner">
+          <div class="tile-header">
+            <span class="tile-emoji">{{ wish.emoji }}</span>
+            <div>
+              <p class="tile-name">{{ wish.contributor_name }}</p>
+              <p class="tile-date">{{ wish.created_at.strftime('%b %d, %Y') }}</p>
+            </div>
+          </div>
+          <p class="tile-msg">"{{ wish.message }}"</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% if card.wishes | length > 20 %}
+    <p style="text-align:center;color:#9ca3af;font-size:0.8rem;margin-top:1rem;">
+      Scroll up to read every single wish 💛
+    </p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Footer -->
+  <div class="card-footer">
+    <p class="footer-quote">
+      "This card was made with love by {{ card.wishes | length + (1 if card.organizer_message else 0) }} people — keep it forever."
+    </p>
+    <p class="footer-brand">Created with WishTogether ❤️</p>
+  </div>
+
+  <!-- Metadata note -->
+  <div class="meta-note">
+    Saved on {{ card.occasion_date or 'a special day' }} &nbsp;·&nbsp;
+    {{ card.wishes | length }} wishes &nbsp;·&nbsp;
+    This file needs no internet connection to open.
+  </div>
+
+</body>
+</html>
