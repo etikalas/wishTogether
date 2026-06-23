@@ -56,9 +56,11 @@
       <!-- Message -->
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-2">Your Birthday Wish <span class="text-red-400">*</span></label>
-        <textarea id="messageInput" rows="4" placeholder="Write something heartfelt..."
+        <textarea id="messageInput" rows="5" placeholder="Write something heartfelt..."
                   class="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-400 transition resize-none" required></textarea>
-        <p class="text-right text-xs text-gray-400 mt-1"><span id="charCount">0</span>/300</p>
+        <p class="text-right text-xs mt-1">
+          <span id="charCount" class="font-medium text-gray-400">0</span><span class="text-gray-300">/500</span>
+        </p>
       </div>
 
       <!-- Emoji picker -->
@@ -123,10 +125,20 @@
     document.querySelector(`[data-color="${c}"]`).classList.add('ring-purple-500', 'ring-offset-2');
   }
 
+  const MAX_CHARS = 500;
   document.getElementById('messageInput').addEventListener('input', function() {
     const len = this.value.length;
-    document.getElementById('charCount').textContent = len;
-    if (len > 300) this.value = this.value.substring(0, 300);
+    if (len > MAX_CHARS) this.value = this.value.substring(0, MAX_CHARS);
+    const counter = document.getElementById('charCount');
+    counter.textContent = this.value.length;
+    // colour-code: green → amber → red as limit approaches
+    if (this.value.length >= MAX_CHARS) {
+      counter.className = 'font-medium text-red-500';
+    } else if (this.value.length >= MAX_CHARS * 0.85) {
+      counter.className = 'font-medium text-amber-500';
+    } else {
+      counter.className = 'font-medium text-gray-400';
+    }
   });
 
   document.getElementById('wishForm').addEventListener('submit', async function(e) {
@@ -170,7 +182,9 @@
     document.getElementById('successMsg').classList.add('hidden');
     document.getElementById('nameInput').value = '';
     document.getElementById('messageInput').value = '';
-    document.getElementById('charCount').textContent = '0';
+    const counter = document.getElementById('charCount');
+    counter.textContent = '0';
+    counter.className = 'font-medium text-gray-400';
   }
 
   async function loadWishes() {
