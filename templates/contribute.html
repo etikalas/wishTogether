@@ -115,8 +115,8 @@
       <!-- Color picker -->
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-2">Card Color</label>
-        <div class="flex gap-3" id="colorPicker">
-          {% for color in ['purple', 'pink', 'teal', 'amber', 'blue', 'rose'] %}
+        <div class="flex flex-wrap gap-3" id="colorPicker">
+          {% for color in ['purple', 'pink', 'teal', 'amber', 'blue', 'rose', 'green', 'indigo', 'orange', 'lime', 'sky', 'violet'] %}
           <button type="button" onclick="selectColor('{{ color }}')"
                   class="color-btn w-8 h-8 rounded-full swatch-{{ color }} ring-2 ring-transparent hover:ring-offset-2 transition"
                   data-color="{{ color }}"></button>
