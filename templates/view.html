@@ -179,16 +179,25 @@
       <div class="masonry-grid {{ cols }} {% if compact %}compact{% endif %}"
            style="column-gap: 1.25rem;">
         {% for wish in card.wishes %}
+        {% set type_labels = {'wish': '🎂 Wish', 'memory': '📸 Memory', 'story': '😂 Story', 'love': '❤️ Love'} %}
+        {% set mtype = wish.memory_type if wish.memory_type else 'wish' %}
         <div class="wish-tile card-{{ wish.color }}"
              style="margin-bottom: 1.25rem; border-radius: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.07);">
           <div class="wish-tile-inner" style="padding: 1.25rem 1.4rem;">
             <div style="display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.75rem;">
               <span class="wish-emoji" style="font-size: 2rem; flex-shrink: 0; line-height: 1;">{{ wish.emoji }}</span>
-              <div>
-                <p class="wish-name" style="font-weight: 800; font-size: 1rem; color: #111827; margin: 0 0 2px 0; opacity: 1;">{{ wish.contributor_name }}</p>
-                <p class="wish-date" style="font-size: 0.72rem; color: #6b7280; margin: 0; opacity: 1;">{{ wish.created_at.strftime('%b %d, %Y') }}</p>
+              <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                  <p class="wish-name" style="font-weight: 800; font-size: 1rem; color: #111827; margin: 0; opacity: 1;">{{ wish.contributor_name }}</p>
+                  <span style="font-size: 0.68rem; font-weight: 600; background: rgba(0,0,0,0.08); color: #374151; padding: 1px 8px; border-radius: 999px;">{{ type_labels.get(mtype, '🎂 Wish') }}</span>
+                </div>
+                <p class="wish-date" style="font-size: 0.72rem; color: #6b7280; margin: 2px 0 0 0; opacity: 1;">{{ wish.created_at.strftime('%b %d, %Y') }}</p>
               </div>
             </div>
+            {% if wish.photo_url %}
+            <img src="{{ wish.photo_url }}" alt="Photo from {{ wish.contributor_name }}"
+                 style="width: 100%; border-radius: 0.6rem; margin-bottom: 0.75rem; max-height: 200px; object-fit: cover;">
+            {% endif %}
             <p class="wish-message" style="color: #1f2937; font-size: 0.92rem; line-height: 1.65; font-style: italic; margin: 0; opacity: 1;">
               "{{ wish.message }}"
             </p>

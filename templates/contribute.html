@@ -53,14 +53,50 @@
                class="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-400 transition" required>
       </div>
 
+      <!-- Memory type -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">What are you sharing?</label>
+        <div class="flex flex-wrap gap-2" id="memoryTypePicker">
+          <button type="button" onclick="selectMemoryType('wish')"
+                  class="memory-btn px-4 py-2 rounded-xl border-2 border-purple-400 bg-purple-50 text-sm font-semibold text-purple-700 transition"
+                  data-type="wish">🎂 Birthday Wish</button>
+          <button type="button" onclick="selectMemoryType('memory')"
+                  class="memory-btn px-4 py-2 rounded-xl border-2 border-gray-200 text-sm font-semibold text-gray-600 hover:border-purple-300 transition"
+                  data-type="memory">📸 A Memory</button>
+          <button type="button" onclick="selectMemoryType('story')"
+                  class="memory-btn px-4 py-2 rounded-xl border-2 border-gray-200 text-sm font-semibold text-gray-600 hover:border-purple-300 transition"
+                  data-type="story">😂 Funny Story</button>
+          <button type="button" onclick="selectMemoryType('love')"
+                  class="memory-btn px-4 py-2 rounded-xl border-2 border-gray-200 text-sm font-semibold text-gray-600 hover:border-purple-300 transition"
+                  data-type="love">❤️ What I Love About You</button>
+        </div>
+        <input type="hidden" id="selectedMemoryType" value="wish">
+      </div>
+
       <!-- Message -->
       <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-2">Your Birthday Wish <span class="text-red-400">*</span></label>
-        <textarea id="messageInput" rows="5" placeholder="Write something heartfelt..."
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Your Memory or Message <span class="text-red-400">*</span></label>
+        <textarea id="messageInput" rows="6" placeholder="Write something heartfelt — a wish, a memory, a story, anything..."
                   class="w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-400 transition resize-none" required></textarea>
         <p class="text-right text-xs mt-1">
-          <span id="charCount" class="font-medium text-gray-400">0</span><span class="text-gray-300">/500</span>
+          <span id="charCount" class="font-medium text-gray-400">0</span><span class="text-gray-300">/2000</span>
         </p>
+      </div>
+
+      <!-- Photo upload -->
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Add a Photo <span class="text-gray-400 font-normal">(optional)</span></label>
+        <label for="photoInput"
+               class="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-xl p-5 cursor-pointer hover:border-purple-400 hover:bg-purple-50 transition" id="photoLabel">
+          <span class="text-3xl mb-1">📷</span>
+          <span class="text-sm text-gray-500" id="photoLabelText">Click to upload a photo</span>
+          <span class="text-xs text-gray-400 mt-1">JPG, PNG, GIF, WEBP — max 5 MB</span>
+        </label>
+        <input type="file" id="photoInput" accept="image/jpeg,image/png,image/gif,image/webp" class="hidden">
+        <div id="photoPreview" class="hidden mt-3">
+          <img id="photoPreviewImg" src="" alt="Preview" class="rounded-xl max-h-48 object-cover w-full">
+          <button type="button" onclick="clearPhoto()" class="mt-1 text-xs text-red-400 hover:underline">Remove photo</button>
+        </div>
       </div>
 
       <!-- Emoji picker -->
@@ -125,13 +161,48 @@
     document.querySelector(`[data-color="${c}"]`).classList.add('ring-purple-500', 'ring-offset-2');
   }
 
-  const MAX_CHARS = 500;
+  const MAX_CHARS = 2000;
+
+  function selectMemoryType(type) {
+    document.getElementById('selectedMemoryType').value = type;
+    document.querySelectorAll('.memory-btn').forEach(b => {
+      b.classList.remove('border-purple-400', 'bg-purple-50', 'text-purple-700');
+      b.classList.add('border-gray-200', 'text-gray-600');
+    });
+    const btn = document.querySelector(`[data-type="${type}"]`);
+    btn.classList.remove('border-gray-200', 'text-gray-600');
+    btn.classList.add('border-purple-400', 'bg-purple-50', 'text-purple-700');
+  }
+
+  // Photo upload preview
+  document.getElementById('photoInput').addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Photo must be under 5 MB.');
+      this.value = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('photoPreviewImg').src = e.target.result;
+      document.getElementById('photoPreview').classList.remove('hidden');
+      document.getElementById('photoLabelText').textContent = file.name;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function clearPhoto() {
+    document.getElementById('photoInput').value = '';
+    document.getElementById('photoPreview').classList.add('hidden');
+    document.getElementById('photoLabelText').textContent = 'Click to upload a photo';
+  }
+
   document.getElementById('messageInput').addEventListener('input', function() {
     const len = this.value.length;
     if (len > MAX_CHARS) this.value = this.value.substring(0, MAX_CHARS);
     const counter = document.getElementById('charCount');
     counter.textContent = this.value.length;
-    // colour-code: green → amber → red as limit approaches
     if (this.value.length >= MAX_CHARS) {
       counter.className = 'font-medium text-red-500';
     } else if (this.value.length >= MAX_CHARS * 0.85) {
@@ -159,6 +230,9 @@
     formData.append('message', message);
     formData.append('emoji', selectedEmoji);
     formData.append('color', selectedColor);
+    formData.append('memory_type', document.getElementById('selectedMemoryType').value);
+    const photoFile = document.getElementById('photoInput').files[0];
+    if (photoFile) formData.append('photo', photoFile);
 
     try {
       const res = await fetch(`/card/${slug}/add`, { method: 'POST', body: formData });

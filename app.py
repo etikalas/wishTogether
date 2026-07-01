@@ -7,6 +7,28 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+SUPABASE_URL = os.environ.get('SUPABASE_URL', '').strip()
+SUPABASE_KEY = os.environ.get('SUPABASE_ANON_KEY', '').strip()
+
+def upload_wish_photo(file_storage, wish_id):
+    """Upload a contributor photo to Supabase Storage. Returns public URL or None."""
+    if not SUPABASE_URL or not SUPABASE_KEY or not file_storage or not file_storage.filename:
+        return None
+    try:
+        from supabase import create_client
+        client = create_client(SUPABASE_URL, SUPABASE_KEY)
+        ext = file_storage.filename.rsplit('.', 1)[-1].lower()
+        if ext not in ('jpg', 'jpeg', 'png', 'gif', 'webp'):
+            return None
+        path = f"wishes/{wish_id}.{ext}"
+        client.storage.from_('wish-photos').upload(
+            path, file_storage.read(),
+            {'content-type': file_storage.content_type, 'upsert': 'true'}
+        )
+        return client.storage.from_('wish-photos').get_public_url(path)
+    except Exception:
+        return None
+
 app = Flask(__name__)
 
 # Environment: "production", "staging", or "development"
@@ -126,6 +148,8 @@ class Wish(db.Model):
     message          = db.Column(db.Text, nullable=False)
     emoji            = db.Column(db.String(10), default='🎉')
     color            = db.Column(db.String(20), default='purple')
+    memory_type      = db.Column(db.String(20), default='wish')   # wish | memory | story | love
+    photo_url        = db.Column(db.Text, nullable=True)
     created_at       = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Birthday(db.Model):
@@ -200,22 +224,34 @@ def add_wish(contribute_slug):
     if card.is_locked:
         return jsonify({'error': 'Card is locked'}), 403
 
-    name    = request.form.get('name', '').strip()
-    message = request.form.get('message', '').strip()
-    emoji   = request.form.get('emoji', '🎉').strip()
-    color   = request.form.get('color', 'purple').strip()
+    name        = request.form.get('name', '').strip()
+    message     = request.form.get('message', '').strip()
+    emoji       = request.form.get('emoji', '🎉').strip()
+    color       = request.form.get('color', 'purple').strip()
+    memory_type = request.form.get('memory_type', 'wish').strip()
+
+    if memory_type not in ('wish', 'memory', 'story', 'love'):
+        memory_type = 'wish'
+    if len(message) > 2000:
+        message = message[:2000]
 
     if not name or not message:
         return jsonify({'error': 'Name and message are required'}), 400
 
     wish = Wish(card_id=card.id, contributor_name=name,
-                message=message, emoji=emoji, color=color)
+                message=message, emoji=emoji, color=color, memory_type=memory_type)
     db.session.add(wish)
+    db.session.flush()  # get wish.id before commit so we can name the photo
+
+    photo_file = request.files.get('photo')
+    wish.photo_url = upload_wish_photo(photo_file, wish.id)
+
     db.session.commit()
 
     return jsonify({'success': True, 'wish': {
         'id': wish.id, 'name': wish.contributor_name,
         'message': wish.message, 'emoji': wish.emoji, 'color': wish.color,
+        'memory_type': wish.memory_type, 'photo_url': wish.photo_url,
     }})
 
 @app.route('/manage/<contribute_slug>')
@@ -255,6 +291,8 @@ def get_wishes(contribute_slug):
     wishes = [{
         'id': w.id, 'name': w.contributor_name,
         'message': w.message, 'emoji': w.emoji, 'color': w.color,
+        'memory_type': getattr(w, 'memory_type', 'wish') or 'wish',
+        'photo_url': getattr(w, 'photo_url', None),
         'created_at': w.created_at.strftime('%b %d, %Y')
     } for w in card.wishes]
     return jsonify({'wishes': wishes, 'count': len(wishes)})
