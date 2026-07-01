@@ -469,6 +469,14 @@ def init_db():
     global _db_ready
     if not _db_ready:
         db.create_all()
+        # Add columns that may be missing from tables created before these fields existed
+        with db.engine.connect() as conn:
+            for sql in [
+                "ALTER TABLE wish ADD COLUMN IF NOT EXISTS memory_type VARCHAR(20) DEFAULT 'wish'",
+                "ALTER TABLE wish ADD COLUMN IF NOT EXISTS photo_url TEXT",
+            ]:
+                conn.execute(db.text(sql))
+            conn.commit()
         _db_ready = True
 
 @app.route('/ping')
