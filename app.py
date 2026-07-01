@@ -433,5 +433,16 @@ def init_db():
         db.create_all()
         _db_ready = True
 
+@app.route('/ping')
+def ping():
+    """Keepalive endpoint — hit by cron-job.org every 4 days to prevent
+    Render from sleeping and Supabase from pausing the free project."""
+    try:
+        card_count = Card.query.count()
+        return jsonify({'status': 'ok', 'cards': card_count}), 200
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
